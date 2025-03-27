@@ -3,19 +3,19 @@ import { useTodoStore } from '@/store/store';
 
 export default {
   name: 'TodoItem',
-  data() {
-    return {
-      todoStore: useTodoStore()
-    }
-  },
   props: {
-    todo: Object
+    todo: Object,
+  },
+  computed: {
+    todoStore() {
+      return useTodoStore();
+    },
   },
   methods: {
     async toggle() {
-      this.todoStore.toggledFetch(this.$props.todo);
-    }
-  }
+      this.todoStore.toggledFetch(this.todo);
+    },
+  },
 }
 </script>
 

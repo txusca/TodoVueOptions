@@ -7,17 +7,14 @@ import { useTodoStore } from './store/store';
 
 export default {
   name: 'App',
-  data() {
-    return {
-      mgs: 'Olá Mundo!!!',
-      todoStore: useTodoStore()
-    }
-  },
   computed: {
-    ...mapState(useTodoStore, ['todos'])
+    ...mapState(useTodoStore, ['todos']),
+    todoStore() {
+      return useTodoStore();
+    },
   },
-  beforeMount() {
-    this.todoStore.addTodosFetch();
+  created() {
+    this.todoStore.fetchTodos();
   },
   components: {
     TodoForm,

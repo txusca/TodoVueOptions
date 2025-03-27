@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 
+const API_BASE_URL = 'https://localhost:7109/api/Todos';
+
 export const useTodoStore = defineStore('todo', {
   state: () => ({
     todos: [],
@@ -9,33 +11,33 @@ export const useTodoStore = defineStore('todo', {
       if (Array.isArray(todo)) return this.todos.push(...todo);
       return this.todos.push(todo);
     },
-    async addTodosFetch() {
+    async fetchTodos() {
       try {
-        const response = await fetch('https://localhost:7109/api/Todos');
+        const response = await fetch(API_BASE_URL);
+        if (!response.ok) throw new Error('Failed to fetch todos');
         const data = await response.json();
-        this.add(data);
+        this.todos = data;
       } catch (err) {
-        console.log(err);
+        console.error('Error fetching todos:', err);
       }
     },
-    async addTodoFetch(data) {
+    async fetchTodo(todo) {
       try {
-        const response = await fetch('https://localhost:7109/api/Todos', {
+        const response = await fetch(API_BASE_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(todo),
         });
-        const dataJson = await response.json();
-        this.add(dataJson);
-      } catch (error) {
-        console.error('Error:', error);
+        if (!response.ok) throw new Error('Failed to add todo');
+        const data = await response.json();
+        this.todos.push(data);
+      } catch (err) {
+        console.error('Error adding todo:', err);
       }
     },
     async deleteTodoFetch(id) {
       try {
-        const response = await fetch(`https://localhost:7109/api/Todos/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ export const useTodoStore = defineStore('todo', {
       };
       try {
         const response = await fetch(
-          `https://localhost:7109/api/Todos/${todo.id}`, // Corrigido para https
+          `${API_BASE_URL}/${todo.id}`, // Corrigido para https
           {
             method: 'PUT',
             headers: {
@@ -90,16 +92,13 @@ export const useTodoStore = defineStore('todo', {
         completed: todo.completed,
       };
       try {
-        const request = await fetch(
-          `https://localhost:7109/api/Todos/${todo.id}`,
-          {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          }
-        );
+        const request = await fetch(`${API_BASE_URL}/${todo.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
         if (!request.ok) {
           return;
         }
